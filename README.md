@@ -1,3 +1,113 @@
+## Project Overview
+
+**POC-54 — Influencer Commerce Funnel**
+**Rail Category:** Distribution & Demand
+**Author:** Ranjana KP
+**Version:** 1.0.0
+
+---
+
+### What This Project Does
+
+The Influencer Commerce Funnel is a production-grade Real Rails Intelligence
+Dashboard that analyzes how creator-led commerce distributes margin across
+platform giants, creator networks, and merchant brands.
+
+The dashboard ingests World Bank macro data (GDP per capita, internet
+penetration, mobile subscriptions) alongside a synthetic commerce event feed
+to simulate and visualize the full discovery-to-purchase funnel across 5
+geographic regions and 5 product verticals.
+
+---
+
+### The Problem It Solves
+
+When a consumer taps "Buy Now" on a creator's post, value is distributed
+across multiple parties — the platform, the creator, the payment rail, and
+the merchant. Most DTC founders and allocators have no visibility into how
+this margin splits, which attribution window to trust, or which creator tier
+delivers the best ROI.
+
+This dashboard makes that invisible flow visible.
+
+---
+
+### Key Features
+
+- **Commerce Conversion Funnel** — Visualizes the full
+  Impressions → Clicks → Add to Cart → Purchases → Creator Payout chain
+
+- **Creator Tier Comparison** — Benchmarks Nano, Micro, Macro, and Mega
+  creators across CTR, CVR, AOV, Revenue, and ROI vs industry standard
+
+- **Margin Split Breakdown** — Shows how every dollar of GMV is divided
+  between the merchant, creator, platform, and rail
+
+- **Attribution Windows** — Compares 1-day, 7-day, 14-day, and 30-day
+  attribution capture rates and their revenue impact
+
+- **Margin Sensitivity Simulator** — Live slider tool to model how changes
+  in traffic volume, AOV, conversion rate, and commission affect brand
+  gross profit in real time
+
+- **World Bank Macro Context** — Calibrates all metrics using real GDP,
+  internet penetration, and mobile subscription data per region
+
+- **Self-Healing Fallback** — Automatically switches to a local mock data
+  engine if the API is unavailable, keeping the dashboard fully functional
+
+---
+
+### Who It Is For
+
+| Audience | Use Case |
+|----------|----------|
+| DTC Founders | Understand margin leakage across creator campaigns |
+| Brand Allocators | Identify highest ROI creator tier for budget deployment |
+| Platform Analysts | Benchmark conversion performance across verticals |
+| Everyday Viewers | Understand how influencer commerce actually works |
+
+---
+
+### Intelligence Sources
+
+| Source | Type | Usage |
+|--------|------|-------|
+| World Bank Data | Live macro | GDP, internet, mobile benchmarks |
+| Synthetic Event Feed | Seeded mock | 250 campaigns × tiers × verticals |
+| Industry Benchmarks | Static | CTR 1.5%, CVR 2.2%, ROI 4.5x |
+
+---
+
+### Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 16, TypeScript, Tailwind CSS |
+| Components | shadcn/ui, Apache ECharts, TanStack Table |
+| Backend | FastAPI, Pandas, DuckDB |
+| Data Engine | Mulberry32 PRNG (seed=42), deterministic synthetic data |
+| Deployment | localhost:3000 (dev), GitHub repository |
+
+---
+
+### Real Rails DNA Compliance
+
+| Requirement | Status |
+|-------------|--------|
+| Background #030712 | ✅ |
+| Sidebar 30% width | ✅ |
+| Main stage 70% width | ✅ |
+| Filters without page refresh | ✅ |
+| Mock fallback active | ✅ |
+| Download sample data | ✅ |
+| Why This Matters panel | ✅ |
+| Who Controls the Rail panel | ✅ |
+
+
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
