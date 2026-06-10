@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { Download, Info, Globe, Tags, Coins, BarChart3, ShieldAlert } from "lucide-react";
+import { Tooltip, InfoIcon, DataSourceBadge } from "./tooltip";
+import { TOOLTIPS } from "@/utils/tooltips";
 
 interface SidebarProps {
   region: string;
@@ -26,6 +28,7 @@ interface SidebarProps {
     mobile_subscriptions: number;
   };
   loading: boolean;
+  isSynthetic?: boolean;
 }
 
 export default function Sidebar({
@@ -35,7 +38,8 @@ export default function Sidebar({
   setVertical,
   metrics,
   macroStats,
-  loading
+  loading,
+  isSynthetic = true
 }: SidebarProps) {
   const [showTooltip, setShowTooltip] = useState<string | null>(null);
 
@@ -88,7 +92,9 @@ export default function Sidebar({
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-[#030712] border border-[#1F2937] p-3 rounded-lg relative overflow-hidden">
             <div className="flex justify-between items-start">
-              <span className="text-[10px] uppercase font-semibold text-gray-400">Total Revenue</span>
+              <Tooltip content={TOOLTIPS.METRICS.TOTAL_REVENUE} position="right">
+                <span className="text-[10px] uppercase font-semibold text-gray-400">Total Revenue</span>
+              </Tooltip>
               <Coins className="h-3.5 w-3.5 text-[#818CF8]" />
             </div>
             <div className="text-lg font-bold text-white mt-1">
@@ -97,11 +103,14 @@ export default function Sidebar({
             <div className="text-[9px] text-[#38BDF8] mt-1 font-mono">
               Creator pay: {loading ? "..." : formatCurrency(metrics.creator_payout)}
             </div>
+            <DataSourceBadge type={isSynthetic ? "synthetic" : "hybrid"} className="mt-2" />
           </div>
 
           <div className="bg-[#030712] border border-[#1F2937] p-3 rounded-lg relative overflow-hidden">
             <div className="flex justify-between items-start">
-              <span className="text-[10px] uppercase font-semibold text-gray-400">Avg Conversion</span>
+              <Tooltip content={TOOLTIPS.METRICS.CONVERSION_RATE} position="left">
+                <span className="text-[10px] uppercase font-semibold text-gray-400">Avg Conversion</span>
+              </Tooltip>
               <BarChart3 className="h-3.5 w-3.5 text-[#38BDF8]" />
             </div>
             <div className="text-lg font-bold text-white mt-1">
@@ -210,11 +219,16 @@ export default function Sidebar({
 
         {/* World Bank Macro indicators panel */}
         <div className="bg-[#030712] border border-[#1F2937] p-3 rounded-lg text-xs space-y-1.5 font-mono">
-          <div className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider mb-1">
-            World Bank Context: {macroStats.name}
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">
+              World Bank Context: {macroStats.name}
+            </span>
+            <DataSourceBadge type="live" />
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-400">GDP Per Capita:</span>
+            <Tooltip content={TOOLTIPS.DATA_SOURCES.WORLD_BANK} position="right">
+              <span className="text-gray-400">GDP Per Capita:</span>
+            </Tooltip>
             <span className="text-white">${Math.round(macroStats.gdp_pc).toLocaleString()}</span>
           </div>
           <div className="flex justify-between">

@@ -8,6 +8,8 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { TrendingUp, Users, Percent, DollarSign } from "lucide-react";
+import { Tooltip, DataSourceBadge } from "./tooltip";
+import { TOOLTIPS } from "@/utils/tooltips";
 
 interface CreatorTierStats {
   tier: string;
@@ -43,7 +45,11 @@ export default function CreatorTable({ data, loading }: CreatorTableProps) {
   const columns = React.useMemo(
     () => [
       columnHelper.accessor("tier", {
-        header: () => <span className="text-gray-400">Creator Tier</span>,
+        header: () => (
+          <Tooltip content={TOOLTIPS.TIERS.NANO + "\n" + TOOLTIPS.TIERS.MICRO + "\n" + TOOLTIPS.TIERS.MACRO + "\n" + TOOLTIPS.TIERS.MEGA} position="right">
+            <span className="text-gray-400 cursor-help">Creator Tier</span>
+          </Tooltip>
+        ),
         cell: (info) => (
           <div className="flex items-center space-x-2 py-1">
             <Users className="h-3.5 w-3.5 text-[#38BDF8]" />
@@ -60,7 +66,11 @@ export default function CreatorTable({ data, loading }: CreatorTableProps) {
         ),
       }),
       columnHelper.accessor("ctr", {
-        header: () => <span className="text-right block">CTR %</span>,
+        header: () => (
+          <Tooltip content="Click-through rate — % of impressions that resulted in clicks" position="bottom">
+            <span className="text-right block text-gray-400 cursor-help">CTR %</span>
+          </Tooltip>
+        ),
         cell: (info) => (
           <span className="font-mono text-right block text-gray-300">
             {info.getValue().toFixed(2)}%
@@ -68,7 +78,11 @@ export default function CreatorTable({ data, loading }: CreatorTableProps) {
         ),
       }),
       columnHelper.accessor("conversion_rate", {
-        header: () => <span className="text-right block">CVR %</span>,
+        header: () => (
+          <Tooltip content="Conversion rate — % of clicks that resulted in purchases" position="bottom">
+            <span className="text-right block text-gray-400 cursor-help">CVR %</span>
+          </Tooltip>
+        ),
         cell: (info) => (
           <span className="font-mono text-right block text-[#38BDF8] font-bold">
             {info.getValue().toFixed(2)}%
@@ -129,14 +143,17 @@ export default function CreatorTable({ data, loading }: CreatorTableProps) {
 
   return (
     <div className="bg-[#0B1117] border border-[#1F2937] rounded-lg p-5">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-start mb-4">
         <div>
           <h2 className="text-sm font-semibold text-white tracking-wide uppercase">Creator Performance Metrics</h2>
           <p className="text-[11px] text-gray-400 font-mono mt-0.5">Segmented campaign conversion indices</p>
         </div>
-        <div className="flex items-center space-x-2 bg-[#030712] border border-[#1F2937] px-2.5 py-1 rounded-md text-[10px] text-gray-400 font-mono">
-          <TrendingUp className="h-3 w-3 text-[#38BDF8]" />
-          <span>Macro Benchmark: 4.5x ROI</span>
+        <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 bg-[#030712] border border-[#1F2937] px-2.5 py-1 rounded-md text-[10px] text-gray-400 font-mono">
+            <TrendingUp className="h-3 w-3 text-[#38BDF8]" />
+            <span>Macro Benchmark: 4.5x ROI</span>
+          </div>
+          <DataSourceBadge type="synthetic" />
         </div>
       </div>
 

@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { Sliders, RefreshCw, AlertCircle, Percent, DollarSign, ArrowUpRight } from "lucide-react";
+import { Tooltip, DataSourceBadge } from "./tooltip";
+import { TOOLTIPS } from "@/utils/tooltips";
 
 interface SensitivityCalculatorProps {
   baseAov: number;
@@ -50,12 +52,15 @@ export default function SensitivityCalculator({
 
   return (
     <div className="bg-[#0B1117] border border-[#1F2937] rounded-lg p-5">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-start mb-4">
         <div>
           <h2 className="text-sm font-semibold text-white tracking-wide uppercase">Margin Sensitivity Simulator</h2>
           <p className="text-[11px] text-gray-400 font-mono mt-0.5">Test variations in commission yields and transaction volumes</p>
         </div>
-        <Sliders className="h-4 w-4 text-[#38BDF8]" />
+        <div className="flex items-center space-x-2">
+          <Sliders className="h-4 w-4 text-[#38BDF8]" />
+          <DataSourceBadge type="synthetic" />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -65,8 +70,10 @@ export default function SensitivityCalculator({
           
           {/* Clicks Slider */}
           <div className="space-y-1.5">
-            <div className="flex justify-between text-[11px] font-mono">
-              <span className="text-gray-400 font-semibold uppercase">Traffic Volume (Clicks)</span>
+            <div className="flex justify-between text-[11px] font-mono items-center">
+              <Tooltip content={TOOLTIPS.SENSITIVITY.CLICKS} position="right">
+                <span className="text-gray-400 font-semibold uppercase cursor-help">Traffic Volume (Clicks)</span>
+              </Tooltip>
               <span className="text-white font-bold">{clicks.toLocaleString()}</span>
             </div>
             <input
@@ -86,8 +93,10 @@ export default function SensitivityCalculator({
 
           {/* AOV Slider */}
           <div className="space-y-1.5">
-            <div className="flex justify-between text-[11px] font-mono">
-              <span className="text-gray-400 font-semibold uppercase">Average Order Value (AOV)</span>
+            <div className="flex justify-between text-[11px] font-mono items-center">
+              <Tooltip content={TOOLTIPS.SENSITIVITY.AOV} position="right">
+                <span className="text-gray-400 font-semibold uppercase cursor-help">Average Order Value (AOV)</span>
+              </Tooltip>
               <span className="text-white font-bold">${aov}</span>
             </div>
             <input
@@ -107,8 +116,10 @@ export default function SensitivityCalculator({
 
           {/* Conversion Rate Slider */}
           <div className="space-y-1.5">
-            <div className="flex justify-between text-[11px] font-mono">
-              <span className="text-gray-400 font-semibold uppercase">Conversion Rate %</span>
+            <div className="flex justify-between text-[11px] font-mono items-center">
+              <Tooltip content={TOOLTIPS.SENSITIVITY.CVR} position="right">
+                <span className="text-gray-400 font-semibold uppercase cursor-help">Conversion Rate %</span>
+              </Tooltip>
               <span className="text-[#38BDF8] font-bold">{convRate}%</span>
             </div>
             <input
@@ -128,8 +139,10 @@ export default function SensitivityCalculator({
 
           {/* Commission Rate Slider */}
           <div className="space-y-1.5">
-            <div className="flex justify-between text-[11px] font-mono">
-              <span className="text-gray-400 font-semibold uppercase">Creator Commission Share</span>
+            <div className="flex justify-between text-[11px] font-mono items-center">
+              <Tooltip content={TOOLTIPS.SENSITIVITY.COMMISSION} position="right">
+                <span className="text-gray-400 font-semibold uppercase cursor-help">Creator Commission Share</span>
+              </Tooltip>
               <span className="text-[#818CF8] font-bold">{commission}%</span>
             </div>
             <input

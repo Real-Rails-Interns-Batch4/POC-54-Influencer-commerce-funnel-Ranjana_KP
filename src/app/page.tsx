@@ -7,6 +7,7 @@ import CreatorTable from "@/components/creator-table";
 import MarginSplit from "@/components/margin-split";
 import AttributionView from "@/components/attribution-view";
 import SensitivityCalculator from "@/components/sensitivity-calculator";
+import { DataSourceFooter } from "@/components/data-source-footer";
 import { AlertCircle, Terminal, HelpCircle } from "lucide-react";
 
 // Local highly responsive self-healing mock fallback (as per Guardrails / 2-Hour Rule)
@@ -40,7 +41,7 @@ const getLocalFallbackData = (region: string, vertical: string) => {
   const totalRevenue = purchases * scaledAov;
   const commission = vert.comm;
   const creatorPayout = totalRevenue * (commission / 100);
-  
+
   const platform = totalRevenue * 0.06;
   const rails = totalRevenue * 0.03;
   const merchant = totalRevenue - (creatorPayout + platform + rails);
@@ -131,7 +132,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#030712] text-gray-100 flex flex-col font-sans">
-      
+
       {/* Dashboard Top Header bar */}
       <header className="bg-[#0B1117] border-b border-[#1F2937] px-6 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-3">
@@ -139,6 +140,7 @@ export default function DashboardPage() {
           <span className="font-mono text-sm font-semibold tracking-wider text-white">REAL RAILS INTELLIGENCE LIBRARY // POC-54</span>
         </div>
         <div className="flex items-center space-x-3 text-xs">
+          <DataSourceFooter />
           {isFallbackMode ? (
             <div className="flex items-center space-x-1.5 bg-amber-950/20 border border-amber-900/50 px-2.5 py-1 rounded-md text-amber-400">
               <AlertCircle className="h-3.5 w-3.5" />
@@ -156,36 +158,10 @@ export default function DashboardPage() {
 
       {/* 2-Column Split Dashboard Shell */}
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        
-        {/* Intelligence Sidebar (30% width on large screens) */}
-        <Sidebar
-          region={region}
-          setRegion={setRegion}
-          vertical={vertical}
-          setVertical={setVertical}
-          metrics={data?.metrics || {
-            total_clicks: 0,
-            total_purchases: 0,
-            total_revenue: 0,
-            creator_payout: 0,
-            avg_aov: 0,
-            conversion_rate: 0,
-            conversion_vs_benchmark: 0,
-            ctr: 0,
-            ctr_vs_benchmark: 0
-          }}
-          macroStats={data?.macro_indicators || {
-            name: "Loading...",
-            gdp_pc: 0,
-            internet_penetration: 0,
-            mobile_subscriptions: 0
-          }}
-          loading={loading}
-        />
 
-        {/* Main Stage (70% width on large screens) */}
+        {/* MAIN STAGE (70% width on large screens) - NOW ON LEFT */}
         <main className="flex-1 p-6 overflow-y-auto space-y-6 lg:max-h-[calc(100vh-60px)]">
-          
+
           {/* Top Stage Grid (Funnel + Margin Doughnut) */}
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             <div className="xl:col-span-2">
@@ -227,6 +203,33 @@ export default function DashboardPage() {
           </div>
 
         </main>
+
+        {/* INTELLIGENCE SIDEBAR (30% width) - NOW ON RIGHT */}
+        <Sidebar
+          region={region}
+          setRegion={setRegion}
+          vertical={vertical}
+          setVertical={setVertical}
+          metrics={data?.metrics || {
+            total_clicks: 0,
+            total_purchases: 0,
+            total_revenue: 0,
+            creator_payout: 0,
+            avg_aov: 0,
+            conversion_rate: 0,
+            conversion_vs_benchmark: 0,
+            ctr: 0,
+            ctr_vs_benchmark: 0
+          }}
+          macroStats={data?.macro_indicators || {
+            name: "Loading...",
+            gdp_pc: 0,
+            internet_penetration: 0,
+            mobile_subscriptions: 0
+          }}
+          loading={loading}
+          isSynthetic={true}
+        />
 
       </div>
     </div>

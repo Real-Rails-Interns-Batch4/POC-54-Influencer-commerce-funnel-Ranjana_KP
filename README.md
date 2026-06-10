@@ -56,6 +56,36 @@ This dashboard makes that invisible flow visible.
 - **Self-Healing Fallback** — Automatically switches to a local mock data
   engine if the API is unavailable, keeping the dashboard fully functional
 
+- **Interactive Tooltips** — Hover over any metric, stage, or control to see
+  contextual explanations. All interactive elements have built-in help text
+
+- **Data Source Attribution** — "Data Sources & Attribution" button in header
+  reveals exact sources, algorithms, and reproducibility details for all data
+
+- **Synthetic Data Labeling** — All visualizations clearly marked as "Synthetic Data"
+  or "Live Data" with color-coded badges and detailed transparency info
+
+---
+
+### Interactive Features & Tooltips
+
+Every interactive element in the dashboard includes context-aware tooltips:
+
+| Element | Tooltip Content | Position |
+|---------|---|---|
+| **Funnel Stages** | Purpose and volume metrics of each stage | On Hover |
+| **Margin Categories** | How each entity captures value from GMV | On Hover |
+| **Creator Tiers** | Follower ranges, CTR/CVR characteristics | On Hover |
+| **Attribution Windows** | Time window scope and capture efficiency | On Button |
+| **Sensitivity Sliders** | Impact of each parameter on economics | On Hover |
+| **World Bank Macro** | GDP, internet penetration, mobile data context | On Hover |
+| **Data Badges** | Source type (Live/Synthetic/Hybrid) details | On Hover |
+
+**How to use:**
+- Hover over any metric label or icon for instant explanations
+- Click "Data Sources & Attribution" button to see full source documentation
+- Look for colored badges showing data source (emerald=live, indigo=synthetic, cyan=hybrid)
+
 ---
 
 ### Who It Is For
@@ -71,11 +101,17 @@ This dashboard makes that invisible flow visible.
 
 ### Intelligence Sources
 
-| Source | Type | Usage |
-|--------|------|-------|
-| World Bank Data | Live macro | GDP, internet, mobile benchmarks |
-| Synthetic Event Feed | Seeded mock | 250 campaigns × tiers × verticals |
-| Industry Benchmarks | Static | CTR 1.5%, CVR 2.2%, ROI 4.5x |
+| Source | Type | Usage | Attribution |
+|--------|------|-------|---|
+| World Bank Data | Live macro | GDP, internet, mobile benchmarks | Badged as "Live Data" with API fallback info |
+| Synthetic Event Feed | Seeded mock | 250 campaigns × tiers × verticals | Badged as "Synthetic Data" with seed=42 reproducibility |
+| Industry Benchmarks | Static | CTR 1.5%, CVR 2.2%, ROI 4.5x | Linked in "Data Sources & Attribution" modal |
+
+**Transparency:**
+- Click header button to view complete source documentation
+- All visualizations labeled with data source type and badge color
+- Fallback mechanisms and API timeouts fully disclosed
+- Determinism & reproducibility details available on demand
 
 ---
 
@@ -91,6 +127,57 @@ This dashboard makes that invisible flow visible.
 
 ---
 
+### New Components (Tooltips & Attribution)
+
+**File Structure:**
+```
+src/
+  utils/
+    tooltips.ts          ← Tooltip content library (50+ messages)
+  components/
+    tooltip.tsx          ← Tooltip, InfoIcon, DataSourceBadge components
+    data-source-footer.tsx ← Data attribution modal & button
+```
+
+**Component Details:**
+
+| File | Purpose | Exports |
+|------|---------|---------|
+| `tooltips.ts` | Centralized tooltip messages & source info | `TOOLTIPS`, `SOURCE_ATTRIBUTION`, `getSourceBadgeLabel()` |
+| `tooltip.tsx` | Reusable tooltip components | `Tooltip`, `InfoIcon`, `DataSourceBadge`, `SourceInfoModal` |
+| `data-source-footer.tsx` | Header button + attribution modal | `DataSourceFooter` |
+
+**Usage in Components:**
+- All 6 main components now import tooltips
+- Funnel, Margin, Creator Table, Attribution, Sensitivity all show data badges
+- Sidebar metrics have tooltip help icons
+- Every parameter has context-aware explanations
+
+---
+
+### Latest Updates (v1.0.0 - June 10, 2026)
+
+**✨ New Features:**
+- **Interactive Tooltips** — 50+ contextual help messages across all components
+  - Hover over any metric, stage, filter, or slider for instant explanations
+  - Smooth animations and color-coded positioning
+  
+- **Data Source Attribution** — Full transparency about data provenance
+  - "Data Sources & Attribution" button in header reveals complete documentation
+  - World Bank API info, synthetic data algorithm (Mulberry32 seed=42), benchmark sources
+  - Fallback mechanisms and API timeout behavior disclosed
+  
+- **Synthetic Data Labeling** — All visualizations clearly marked
+  - Color-coded badges: Emerald (Live), Indigo (Synthetic), Cyan (Hybrid)
+  - Shows at-a-glance which data is real vs simulated
+  
+- **New Components:**
+  - `tooltip.tsx` — Reusable tooltip, icon, badge components
+  - `data-source-footer.tsx` — Attribution modal system
+  - `utils/tooltips.ts` — Centralized tooltip library (50+ messages + source info)
+
+---
+
 ### Real Rails DNA Compliance
 
 | Requirement | Status |
@@ -103,6 +190,10 @@ This dashboard makes that invisible flow visible.
 | Download sample data | ✅ |
 | Why This Matters panel | ✅ |
 | Who Controls the Rail panel | ✅ |
+| Interactive Tooltips | ✅ |
+| Data Source Attribution | ✅ |
+| Synthetic Data Labeling | ✅ |
+| Transparency & Context | ✅ |
 
 
 

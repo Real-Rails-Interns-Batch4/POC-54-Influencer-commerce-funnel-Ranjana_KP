@@ -2,6 +2,8 @@
 
 import React from "react";
 import ReactECharts from "echarts-for-react";
+import { DataSourceBadge } from "./tooltip";
+import { TOOLTIPS } from "@/utils/tooltips";
 
 interface FunnelStage {
   stage: string;
@@ -37,11 +39,21 @@ export default function FunnelChart({ data, loading }: FunnelChartProps) {
       "#38bdf8", // Electric Cyan for Purchases
       "#0ea5e9"  // Cyber Cyan for Creator Payouts
     ];
+
+    const tooltips = [
+      TOOLTIPS.FUNNEL.IMPRESSIONS,
+      TOOLTIPS.FUNNEL.CLICKS,
+      TOOLTIPS.FUNNEL.ADD_TO_CART,
+      TOOLTIPS.FUNNEL.PURCHASES,
+      TOOLTIPS.FUNNEL.PAID_CREATOR
+    ];
+
     return {
       name: d.stage,
       value: d.count,
       percent: d.percent,
       description: d.description,
+      tooltip: tooltips[index],
       itemStyle: {
         color: colors[index % colors.length],
         borderColor: "#1F2937",
@@ -66,11 +78,14 @@ export default function FunnelChart({ data, loading }: FunnelChartProps) {
       formatter: function (params: any) {
         const d = data.find(item => item.stage === params.name);
         return `
-          <div style="padding: 4px 8px;">
-            <b style="color: ${params.color}; font-size: 13px;">${params.name}</b><br/>
+          <div style="padding: 6px 10px; max-width: 240px;">
+            <b style="color: ${params.color}; font-size: 12px;">${params.name}</b><br/>
             <span style="color: #9ca3af;">Volume:</span> <b>${params.value.toLocaleString()}</b><br/>
             <span style="color: #9ca3af;">Rate:</span> <b>${params.data.percent}%</b><br/>
-            <i style="color: #6b7280; font-size: 10px;">${params.data.description}</i>
+            <i style="color: #6b7280; font-size: 10px; line-height: 1.4;">${params.data.description}</i><br/>
+            <div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #374151; font-size: 10px; color: #9ca3af;">
+              ℹ ${params.data.tooltip}
+            </div>
           </div>
         `;
       }
@@ -123,14 +138,12 @@ export default function FunnelChart({ data, loading }: FunnelChartProps) {
 
   return (
     <div className="bg-[#0B1117] rounded-lg border border-[#1F2937] p-5 glow-active-hover transition-all duration-300">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-start mb-4">
         <div>
           <h2 className="text-sm font-semibold text-white tracking-wide uppercase">Commerce Conversion Funnel</h2>
           <p className="text-[11px] text-gray-400 font-mono mt-0.5">Discovery-to-purchase volume efficiency</p>
         </div>
-        <div className="text-right text-[10px] text-gray-400 font-mono">
-          Stage Yield Rate %
-        </div>
+        <DataSourceBadge type="synthetic" />
       </div>
       
       <div className="h-[350px]">

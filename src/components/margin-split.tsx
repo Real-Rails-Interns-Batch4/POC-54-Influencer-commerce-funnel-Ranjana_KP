@@ -2,6 +2,8 @@
 
 import React from "react";
 import ReactECharts from "echarts-for-react";
+import { DataSourceBadge } from "./tooltip";
+import { TOOLTIPS } from "@/utils/tooltips";
 
 interface MarginPercentages {
   creator: number;
@@ -42,10 +44,10 @@ export default function MarginSplit({ data, loading }: MarginSplitProps) {
   };
 
   const chartData = [
-    { name: "Merchant Margin", value: data.merchant, percent: data.percentages.merchant, color: "#10b981" }, // Emerald
-    { name: "Creator Share", value: data.creator, percent: data.percentages.creator, color: "#38bdf8" }, // Electric Cyan
-    { name: "Platform Fee", value: data.platform, percent: data.percentages.platform, color: "#818cf8" }, // Indigo
-    { name: "Rail Costs", value: data.rails, percent: data.percentages.rails, color: "#4b5563" } // Slate Grey
+    { name: "Merchant Margin", value: data.merchant, percent: data.percentages.merchant, color: "#10b981", tooltip: TOOLTIPS.MARGIN.MERCHANT }, // Emerald
+    { name: "Creator Share", value: data.creator, percent: data.percentages.creator, color: "#38bdf8", tooltip: TOOLTIPS.MARGIN.CREATOR }, // Electric Cyan
+    { name: "Platform Fee", value: data.platform, percent: data.percentages.platform, color: "#818cf8", tooltip: TOOLTIPS.MARGIN.PLATFORM }, // Indigo
+    { name: "Rail Costs", value: data.rails, percent: data.percentages.rails, color: "#4b5563", tooltip: TOOLTIPS.MARGIN.RAILS } // Slate Grey
   ];
 
   const option = {
@@ -61,10 +63,13 @@ export default function MarginSplit({ data, loading }: MarginSplitProps) {
       },
       formatter: function (params: any) {
         return `
-          <div style="padding: 4px 8px;">
+          <div style="padding: 6px 10px; max-width: 240px;">
             <b style="color: ${params.color}; font-size: 12px;">${params.name}</b><br/>
             <span style="color: #9ca3af;">Payout:</span> <b>${formatCurrency(params.value)}</b><br/>
-            <span style="color: #9ca3af;">Share:</span> <b>${params.data.percent}%</b>
+            <span style="color: #9ca3af;">Share:</span> <b>${params.data.percent}%</b><br/>
+            <div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #374151; font-size: 10px; color: #9ca3af;">
+              ℹ ${params.data.tooltip}
+            </div>
           </div>
         `;
       }
@@ -108,9 +113,12 @@ export default function MarginSplit({ data, loading }: MarginSplitProps) {
 
   return (
     <div className="bg-[#0B1117] rounded-lg border border-[#1F2937] p-5 flex flex-col justify-between h-full">
-      <div>
-        <h2 className="text-sm font-semibold text-white tracking-wide uppercase">Margin Share Breakdown</h2>
-        <p className="text-[11px] text-gray-400 font-mono mt-0.5">Economic yield split across distribution partners</p>
+      <div className="flex justify-between items-start mb-2">
+        <div>
+          <h2 className="text-sm font-semibold text-white tracking-wide uppercase">Margin Share Breakdown</h2>
+          <p className="text-[11px] text-gray-400 font-mono mt-0.5">Economic yield split across distribution partners</p>
+        </div>
+        <DataSourceBadge type="synthetic" />
       </div>
 
       <div className="flex items-center justify-between my-2">
