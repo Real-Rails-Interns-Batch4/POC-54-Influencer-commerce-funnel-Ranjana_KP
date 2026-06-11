@@ -1,9 +1,25 @@
 "use client";
 
 import React, { useState } from "react";
-import { Download, Info, Globe, Tags, Coins, BarChart3, ShieldAlert } from "lucide-react";
-import { Tooltip, InfoIcon, DataSourceBadge } from "./tooltip";
+import {
+  Download,
+  Info,
+  Globe,
+  Tags,
+  Coins,
+  BarChart3,
+  ShieldAlert,
+  BookOpen,
+} from "lucide-react";
+import { Tooltip, DataSourceBadge } from "./tooltip";
 import { TOOLTIPS } from "@/utils/tooltips";
+import DataDictionaryModal from "./data-dictionary-modal";
+import {
+  downloadCSV,
+  downloadJSON,
+  generateCompleteDataset,
+  getTimestampedFilename,
+} from "@/lib/mock-data";
 
 interface SidebarProps {
   region: string;
@@ -39,9 +55,12 @@ export default function Sidebar({
   metrics,
   macroStats,
   loading,
-  isSynthetic = true
+  isSynthetic = true,
 }: SidebarProps) {
   const [showTooltip, setShowTooltip] = useState<string | null>(null);
+  const [showDataDictionary, setShowDataDictionary] = useState(false);
+  const [downloadingCSV, setDownloadingCSV] = useState(false);
+  const [downloadingJSON, setDownloadingJSON] = useState(false);
 
   const countries = [
     { code: "ALL", name: "Global Benchmark" },
@@ -49,7 +68,7 @@ export default function Sidebar({
     { code: "DE", name: "Germany" },
     { code: "BR", name: "Brazil" },
     { code: "IN", name: "India" },
-    { code: "ID", name: "Indonesia" }
+    { code: "ID", name: "Indonesia" },
   ];
 
   const categories = [
@@ -58,37 +77,64 @@ export default function Sidebar({
     { code: "Beauty", name: "Beauty & Cosmetics" },
     { code: "Tech", name: "Consumer Tech" },
     { code: "Gaming", name: "Gaming & Esports" },
-    { code: "Home", name: "Home & Lifestyle" }
+    { code: "Home", name: "Home & Lifestyle" },
   ];
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
-      maximumFractionDigits: 0
+      maximumFractionDigits: 0,
     }).format(val);
   };
 
-  const handleDownload = () => {
-    const url = `/api/download?region=${region}&vertical=${vertical}`;
-    window.open(url, "_blank");
+  const getExportData = () => {
+    const filterRegion = region === "ALL" ? undefined : region;
+    const filterVertical = vertical === "ALL" ? undefined : vertical;
+    return generateCompleteDataset(50, filterRegion, filterVertical);
+  };
+
+  const handleDownloadCSV = () => {
+    setDownloadingCSV(true);
+    try {
+      const data = getExportData();
+      downloadCSV(data, getTimestampedFilename("influencer-funnel-data", "csv"));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDownloadingCSV(false);
+    }
+  };
+
+  const handleDownloadJSON = () => {
+    setDownloadingJSON(true);
+    try {
+      const data = getExportData();
+      downloadJSON(data, getTimestampedFilename("influencer-funnel-data", "json"));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDownloadingJSON(false);
+    }
   };
 
   return (
     <aside className="w-full lg:w-[30%] bg-[#0B1117] border-b lg:border-b-0 lg:border-r border-[#1F2937] p-6 flex flex-col justify-between overflow-y-auto h-full space-y-6">
-      
       {/* SECTION A: Title & Metrics */}
       <div className="space-y-6">
         <div>
           <div className="flex items-center space-x-2">
             <span className="h-2 w-2 rounded-full bg-[#38BDF8] animate-pulse"></span>
-            <span className="text-xs uppercase tracking-widest text-[#38BDF8] font-semibold">Distribution & Demand</span>
+            <span className="text-xs uppercase tracking-widest text-[#38BDF8] font-semibold">
+              Distribution & Demand
+            </span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-white mt-1">Influencer commerce funnel</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-white mt-1">
+            Influencer commerce funnel
+          </h1>
           <p className="text-xs text-gray-400 mt-1">Real-time creator economy rail analytics</p>
         </div>
 
-        {/* High-level metrics grid */}
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-[#030712] border border-[#1F2937] p-3 rounded-lg relative overflow-hidden">
             <div className="flex justify-between items-start">
@@ -116,8 +162,14 @@ export default function Sidebar({
             <div className="text-lg font-bold text-white mt-1">
               {loading ? "..." : `${metrics.conversion_rate.toFixed(2)}%`}
             </div>
-            <div className={`text-[9px] mt-1 font-mono ${metrics.conversion_vs_benchmark >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
-              {loading ? "..." : `${metrics.conversion_vs_benchmark >= 0 ? "+" : ""}${metrics.conversion_vs_benchmark.toFixed(1)}% vs benchmark`}
+            <div
+              className={`text-[9px] mt-1 font-mono ${
+                metrics.conversion_vs_benchmark >= 0 ? "text-emerald-400" : "text-rose-400"
+              }`}
+            >
+              {loading
+                ? "..."
+                : `${metrics.conversion_vs_benchmark >= 0 ? "+" : ""}${metrics.conversion_vs_benchmark.toFixed(1)}% vs benchmark`}
             </div>
           </div>
         </div>
@@ -130,7 +182,9 @@ export default function Sidebar({
           <span>Why This Matters</span>
         </div>
         <p className="text-xs text-gray-300 leading-relaxed">
-          Useful for DTC founders and everyday viewers alike. Platforms are compressing merchant margins; influencer networks act as critical distribution conduits. Understanding funnel leakages ensures brand survival and optimizes capital allocation.
+          Useful for DTC founders and everyday viewers alike. Platforms are compressing merchant
+          margins; influencer networks act as critical distribution conduits. Understanding funnel
+          leakages ensures brand survival and optimizes capital allocation.
         </p>
       </div>
 
@@ -141,16 +195,19 @@ export default function Sidebar({
           <span>Who Controls the Rail</span>
         </div>
         <p className="text-xs text-gray-300 leading-relaxed">
-          Platform giants (TikTok Shop, Instagram, YouTube) and creator networks act as the gatekeepers of discovery-to-purchase flow, dictating terms, fees, and algorithmic reach that determine whether a brand or creator captures margin or surrenders it.
+          Platform giants (TikTok Shop, Instagram, YouTube) and creator networks act as the
+          gatekeepers of discovery-to-purchase flow, dictating terms, fees, and algorithmic reach that
+          determine whether a brand or creator captures margin or surrenders it.
         </p>
       </div>
 
       {/* SECTION D: Functional Filters */}
       <div className="space-y-4">
         <div className="border-t border-[#1F2937] pt-4">
-          <span className="text-xs uppercase font-semibold text-gray-400 tracking-wider block mb-3">Controls & Calibration</span>
-          
-          {/* Region selector */}
+          <span className="text-xs uppercase font-semibold text-gray-400 tracking-wider block mb-3">
+            Controls & Calibration
+          </span>
+
           <div className="space-y-1.5 mb-3">
             <div className="flex justify-between items-center">
               <label className="text-[11px] text-gray-400 flex items-center space-x-1">
@@ -165,10 +222,11 @@ export default function Sidebar({
                 <Info className="h-3.5 w-3.5" />
               </button>
             </div>
-            
+
             {showTooltip === "region" && (
               <div className="bg-slate-900 border border-[#1F2937] text-[10px] text-gray-300 p-2 rounded mb-2 leading-relaxed">
-                Applies World Bank macro factors (GDP pc: ${macroStats.gdp_pc.toLocaleString()}, Internet: {macroStats.internet_penetration}%) to scale simulated values.
+                Applies World Bank macro factors (GDP pc: ${macroStats.gdp_pc.toLocaleString()},
+                Internet: {macroStats.internet_penetration}%) to scale simulated values.
               </div>
             )}
 
@@ -178,12 +236,13 @@ export default function Sidebar({
               className="w-full bg-[#030712] border border-[#1F2937] text-xs text-white p-2.5 rounded-lg focus:outline-none focus:border-[#38BDF8] focus:ring-1 focus:ring-[#38BDF8]"
             >
               {countries.map((c) => (
-                <option key={c.code} value={c.code}>{c.name}</option>
+                <option key={c.code} value={c.code}>
+                  {c.name}
+                </option>
               ))}
             </select>
           </div>
 
-          {/* Vertical selector */}
           <div className="space-y-1.5">
             <div className="flex justify-between items-center">
               <label className="text-[11px] text-gray-400 flex items-center space-x-1">
@@ -201,7 +260,8 @@ export default function Sidebar({
 
             {showTooltip === "vertical" && (
               <div className="bg-slate-900 border border-[#1F2937] text-[10px] text-gray-300 p-2 rounded mb-2 leading-relaxed">
-                Filters creator campaign categories which scale Average Order Value (AOV) and conversion yields.
+                Filters creator campaign categories which scale Average Order Value (AOV) and
+                conversion yields.
               </div>
             )}
 
@@ -211,13 +271,14 @@ export default function Sidebar({
               className="w-full bg-[#030712] border border-[#1F2937] text-xs text-white p-2.5 rounded-lg focus:outline-none focus:border-[#818CF8] focus:ring-1 focus:ring-[#818CF8]"
             >
               {categories.map((cat) => (
-                <option key={cat.code} value={cat.code}>{cat.name}</option>
+                <option key={cat.code} value={cat.code}>
+                  {cat.name}
+                </option>
               ))}
             </select>
           </div>
         </div>
 
-        {/* World Bank Macro indicators panel */}
         <div className="bg-[#030712] border border-[#1F2937] p-3 rounded-lg text-xs space-y-1.5 font-mono">
           <div className="flex justify-between items-center mb-1">
             <span className="text-[10px] text-gray-400 font-semibold uppercase tracking-wider">
@@ -242,16 +303,48 @@ export default function Sidebar({
         </div>
       </div>
 
-      {/* SECTION E: Download Sample Data */}
-      <button
-        onClick={handleDownload}
-        disabled={loading}
-        className="w-full bg-gradient-to-r from-[#1F2937] to-[#111827] hover:from-[#38BDF8] hover:to-[#818CF8] text-white hover:text-[#030712] font-semibold text-xs py-3 px-4 rounded-lg flex items-center justify-center space-x-2 border border-[#1F2937] hover:border-transparent transition-all duration-300 shadow-md glow-cyan-hover"
-      >
-        <Download className="h-4 w-4" />
-        <span>Download Raw Dataset (CSV)</span>
-      </button>
+      {/* SECTION E: Export & Data Dictionary */}
+      <div className="space-y-3">
+        <button
+          onClick={() => setShowDataDictionary(true)}
+          className="w-full bg-[#1F2937] hover:bg-[#2A3F5F] text-white text-xs py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"
+        >
+          <BookOpen className="h-4 w-4" />
+          View Data Dictionary
+        </button>
 
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={handleDownloadCSV}
+            disabled={loading || downloadingCSV}
+            className="bg-gradient-to-r from-[#1F2937] to-[#111827] hover:from-[#38BDF8] hover:to-[#818CF8] disabled:opacity-50 text-white hover:text-[#030712] font-semibold text-xs py-3 px-3 rounded-lg flex items-center justify-center gap-2 border border-[#1F2937] hover:border-transparent transition-all duration-300"
+          >
+            <Download className="h-4 w-4" />
+            {downloadingCSV ? "..." : "CSV"}
+          </button>
+
+          <button
+            onClick={handleDownloadJSON}
+            disabled={loading || downloadingJSON}
+            className="bg-gradient-to-r from-[#1F2937] to-[#111827] hover:from-[#38BDF8] hover:to-[#818CF8] disabled:opacity-50 text-white hover:text-[#030712] font-semibold text-xs py-3 px-3 rounded-lg flex items-center justify-center gap-2 border border-[#1F2937] hover:border-transparent transition-all duration-300"
+          >
+            <Download className="h-4 w-4" />
+            {downloadingJSON ? "..." : "JSON"}
+          </button>
+        </div>
+
+        <div className="text-center">
+          <span className="inline-block bg-blue-500/20 text-blue-400 text-[10px] px-2 py-1 rounded">
+            SYNTHETIC DATA
+          </span>
+          <p className="text-[10px] text-gray-500 mt-1">All records include is_synthetic = true</p>
+        </div>
+      </div>
+
+      <DataDictionaryModal
+        isOpen={showDataDictionary}
+        onClose={() => setShowDataDictionary(false)}
+      />
     </aside>
   );
 }
